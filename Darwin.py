@@ -12,6 +12,10 @@ import socket
 st.set_page_config(layout="wide",page_title="Darwin")
 hide_st_style = """<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>"""
 
+
+firebase_cred=dict(st.secrets)
+firebase_cred.pop('web')
+
 firebaseConfig = {
   'apiKey': "AIzaSyCb38ZtziMFyfmj-X9UhBMZokc3UApV0N0",
   'authDomain': "darwin-58a70.firebaseapp.com",
@@ -21,11 +25,8 @@ firebaseConfig = {
   'appId': "1:97039718621:web:3d624b77e2eb5e3443a334",
   'measurementId': "G-JV4JQR2BGQ",
   "databaseURL": "",
-  "serviceAccount": "serviceAccountKey.json"
+  "serviceAccount": firebase_cred
 }
-
-firebase_cred=dict(st.secrets)
-firebase_cred.pop('web')
 
 firebase = pyrebase.initialize_app(firebaseConfig)
 if not firebase_admin._apps:
