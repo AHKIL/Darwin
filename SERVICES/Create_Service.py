@@ -6,7 +6,9 @@ import google.oauth2.credentials
 import streamlit as st
 
 def Create_Service(db, email, api_name, api_version, *scopes):
-    CLIENT_SECRET_FILE = 'credentials.json'
+    google_cred=dict(st.secrets)
+    google_cred['web']=google_cred.pop('web')
+    CLIENT_SECRET_FILE = google_cred
     API_SERVICE_NAME = api_name
     API_VERSION = api_version
     SCOPES = [scope for scope in scopes[0]]
