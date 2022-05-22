@@ -33,7 +33,10 @@ def run(*args):
             st.session_state.mp_nam=''
             st.session_state.mp_loc_=''
     Location_in.text_input('Location',key='mp_loc_',disabled=off, on_change=click_button_loc)
-    kys1=list(st.session_state['Map_data'].keys())
+    if st.session_state['Map_data'] == None:
+        kys1=[]
+    else:
+        kys1=list(st.session_state['Map_data'].keys())
     if len(kys1)!=0:
         rad1 = dvid[0].radio('Location',kys1,key='rad1_loc')        
         def del_Location():
@@ -78,28 +81,29 @@ def run(*args):
     else: 
         map_draw = folium.Map(location=[31.535769249543304, 76.89800904547637], zoom_start=13)
     map_draw.add_child(folium.LatLngPopup())
-    for i in st.session_state['Map_data']:
-        strin = ''
-        for j in st.session_state['Map_data'][i]['Section']:
-            strin += f"<h2> {j} </h2><ul>"
-            for k in (st.session_state['Map_data'][i]['Section'][j].split('\n')):
-                strin += f"<li>{k}</li>"
-            strin +=  '</ul>'
-        html = f"""
-                <h1> {i}</h1>
-                {strin}
-                """
-        iframe = branca.element.IFrame(html=html, width=300, height=200)
-        popup = folium.Popup(iframe, max_width=300)
-        if len(st.session_state['Map_data'][i]['Location'].split(' '))==4:
-            x_co = float(st.session_state['Map_data'][i]['Location'].split(' ')[1])
-            y_co = float(st.session_state['Map_data'][i]['Location'].split(' ')[-1])
-        elif len(st.session_state['Map_data'][i]['Location'].split(' '))==2:
-            x_co = float(st.session_state['Map_data'][i]['Location'].split(' ')[0][:-1])
-            y_co = float(st.session_state['Map_data'][i]['Location'].split(' ')[1])
-        folium.Marker([x_co, y_co]
-                        , popup=popup, tooltip=i).add_to(map_draw)
-    folium_static(map_draw, width=937, height=550)
+    if len(kys1)!=0:
+        for i in st.session_state['Map_data']:
+            strin = ''
+            for j in st.session_state['Map_data'][i]['Section']:
+                strin += f"<h2> {j} </h2><ul>"
+                for k in (st.session_state['Map_data'][i]['Section'][j].split('\n')):
+                    strin += f"<li>{k}</li>"
+                strin +=  '</ul>'
+            html = f"""
+                    <h1> {i}</h1>
+                    {strin}
+                    """
+            iframe = branca.element.IFrame(html=html, width=300, height=200)
+            popup = folium.Popup(iframe, max_width=300)
+            if len(st.session_state['Map_data'][i]['Location'].split(' '))==4:
+                x_co = float(st.session_state['Map_data'][i]['Location'].split(' ')[1])
+                y_co = float(st.session_state['Map_data'][i]['Location'].split(' ')[-1])
+            elif len(st.session_state['Map_data'][i]['Location'].split(' '))==2:
+                x_co = float(st.session_state['Map_data'][i]['Location'].split(' ')[0][:-1])
+                y_co = float(st.session_state['Map_data'][i]['Location'].split(' ')[1])
+            folium.Marker([x_co, y_co]
+                            , popup=popup, tooltip=i).add_to(map_draw)
+        folium_static(map_draw, width=937, height=550)
 
     db.collection('Users').document(email).collection('PLUGINS').document('Maps').set(st.session_state['Map_data'])
 
