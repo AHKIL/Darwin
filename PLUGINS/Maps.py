@@ -27,11 +27,16 @@ def run(*args):
         off=True
     else:
         off=False
+    
+    def save():
+        db.collection('Users').document(email).collection('PLUGINS').document('Maps').set(st.session_state['Map_data'])
+    
     def click_button_loc():
         if off==False:
             if st.session_state['Map_data'] == None:
                 st.session_state['Map_data']={}
             st.session_state['Map_data'][name]={'Location':st.session_state.mp_loc_,'Section':{}}
+            save()
             st.session_state.mp_nam=''
             st.session_state.mp_loc_=''
     Location_in.text_input('Location',key='mp_loc_',disabled=off, on_change=click_button_loc)
@@ -43,18 +48,22 @@ def run(*args):
         rad1 = dvid[0].radio('Location',kys1,key='rad1_loc')        
         def del_Location():
             del st.session_state['Map_data'][rad1]
+            save()
         def rename_Location():
             if rad1!=st.session_state['Location_u'+rad1]:
                 st.session_state['Map_data'][st.session_state['Location_u'+rad1]]=st.session_state['Map_data'].pop(rad1)
+                save()
         def rename_Location_a():
             if rad1!=st.session_state['Location_u_a'+rad1]:
                 st.session_state['Map_data'][rad1]['Location']=st.session_state['Location_u_a'+rad1]
+                save()
         dvid[0].text_input('Rename',key='Location_u'+rad1,value=rad1, on_change=rename_Location)
         dvid[0].text_input('Edit location',key='Location_u_a'+rad1,value=st.session_state['Map_data'][rad1]['Location'], on_change=rename_Location_a)
         dvid[0].button('Delete',key='Location'+rad1,on_click = del_Location)  
         def click_button_sec():
             if st.session_state.mp_sec!='':
                 st.session_state['Map_data'][rad1]['Section'][st.session_state.mp_sec]=''
+                save()
                 st.session_state.mp_sec=''
         section_in.text_input('Section',key='mp_sec', on_change=click_button_sec)
         kys2=list(st.session_state['Map_data'][rad1]['Section'].keys())
@@ -62,13 +71,16 @@ def run(*args):
             rad2=dvid[1].radio('Section',kys2,key='rad2_loc')
             def del_section():
                 del st.session_state['Map_data'][rad1]['Section'][rad2]
+                save()
             def rename_section():
                 if rad2!=st.session_state['Section_u'+rad2]:
                     st.session_state['Map_data'][rad1]['Section'][st.session_state['Section_u'+rad2]]=st.session_state['Map_data'][rad1]['Section'].pop(rad2)
+                    save()
             dvid[1].text_input('Rename',key='Section_u'+rad2,value=rad2, on_change=rename_section)
             dvid[1].button('Delete',key='Section'+rad2,on_click = del_section)
             def update_Section_val():
                 st.session_state['Map_data'][rad1]['Section'][rad2]=st.session_state[rad1+rad2]
+                save()
             dvid[2].text_area(rad2,on_change=update_Section_val , height = 232,
                               key=rad1+rad2,value=st.session_state['Map_data'][rad1]['Section'][rad2])
     st.write('---')
