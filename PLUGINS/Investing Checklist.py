@@ -12,7 +12,7 @@ import bs4 as bs
 import ssl
 import re
 import requests
-from datetime import date
+import datetime
 from firebase_admin import firestore
 from PLUGINS.Bayes_Theorem import run as Bayes_theoram
 from PLUGINS.Hamiltons_Rule import run as Hamiltons_rule
@@ -290,14 +290,15 @@ def run(*args):
     selected_comp = slct.selectbox('Select company',all_comp_list)
 
     def creat_new_company():
-        dic = {'Name':'','Link':'','Notes':'','Revenue_breakup':{}
-                                            ,'Sectors outlooks':'','Management':{'Manager and his track record':''
-                                                            ,'Managers net worth is linked with the company':''
-                                                            ,'Is the manager the owner and level 5 leader':''}
-                                            ,'Leverage and failure':'','Motes and competitive advantage':''
-                                            ,'Probabilities':{},'DCF Hamiltons formula':'','What can go wrong and max loss':''}
+        dic = {'Name':'','Link':'','Current_Price':'', 'Revenue_breakup':{}
+                ,'Date':datetime.datetime.now().strftime('%d %h %Y - %H:%M:%S'),'Notes':''
+                ,'Sectors outlooks':'','Management':{'Manager and his track record':''
+                                                    ,'Managers net worth is linked with the company':''
+                                                    ,'Is the manager the owner and level 5 leader':''}
+                ,'Leverage and failure':'','Motes and competitive advantage':''
+                ,'Probabilities':{},'DCF Hamiltons formula':'','What can go wrong and max loss':''}
         for i in range(11):
-            dic['Revenue_breakup'][str(date.today().year-i)]={'Revenue_from_operations':{},'Other_renenue_sources':{}}
+            dic['Revenue_breakup'][str(datetime.date.today().year-i)]={'Revenue_from_operations':{},'Other_renenue_sources':{}}
         all_comp.document('Name').set(dic)
 
     new.title('')
@@ -312,7 +313,8 @@ def run(*args):
             if st.session_state['count']!=0:
                 st.session_state['count']-=1
 
-        hdr, hide_show = st.columns([8,1.5])
+        cr_date, hdr, hide_show = st.columns([1.7,6.3,1.5])
+        cr_date.write(comp_json_data['Date'])
         hdr.write('---')
         if status==':seedling:'+' Online':
             with hide_show.container():
@@ -338,15 +340,18 @@ def run(*args):
                 all_comp.document(selected_comp).update({'Link':st.session_state.ttl})
             def edit_notes():
                 all_comp.document(selected_comp).update({'Notes':st.session_state.checklist_notes})
+            def edit_price():
+                all_comp.document(selected_comp).update({'Current_Price':st.session_state.cp})
             comp_json_data['Name'] = arr[0].text_input('Rename',value = selected_comp,on_change=rename_comp,key='cmpr')
             comp_json_data['Link'] = arr[0].text_input('Ticker Tape Link',value = comp_json_data['Link'], on_change=edit_link, key='ttl' )
+            comp_json_data['Current_Price'] = arr[0].text_input('Current Price',value = comp_json_data['Current_Price'], on_change=edit_price, key='cp')
             if comp_json_data['Link']!='':
                 with arr[0].expander('Annual reports'):
                     df,dfb,dfc,gross_margin,margins,Payout_Ratio,c_price,c_mcap,FCF_grw,links = comp_fund_data_extractor(comp_json_data['Link'])
                     for i,j in zip(links,df.columns[-len(links):]):
                         st.write(f"[Annual Report {j}]({i})")
             arr[0].title('')
-            arr[0].slider('Notes height', min_value=350, max_value=1000, value=350, step=10, key='note_size')
+            arr[0].slider('Notes height', min_value=440, max_value=1000, value=440, step=10, key='note_size')
             comp_json_data['Notes'] = arr[1].text_area('General Notes',placeholder='Enter Note',
                                                         height=st.session_state.note_size,value = comp_json_data['Notes'], 
                                                         on_change=edit_notes, key='checklist_notes' )
@@ -358,8 +363,8 @@ def run(*args):
                 if len(comp_json_data['Revenue_breakup'][tobinc]['Revenue_from_operations'])!=0:
                     ytbinc.append(int(tobinc))
             if len(ytbinc)==0:
-                ytbinc.append(date.today().year-1)
-            inc_year = yr_slt.multiselect('Include Year',list(range(date.today().year-10, date.today().year+1)),default=ytbinc)
+                ytbinc.append(datetime.date.today().year-1)
+            inc_year = yr_slt.multiselect('Include Year',list(range(datetime.date.today().year-10, datetime.date.today().year+1)),default=ytbinc)
             inc_year = sorted(inc_year ,reverse=True)
             cur_yr = str(yr_slt.selectbox('Current Year',inc_year))
             if len(inc_year)==0:
