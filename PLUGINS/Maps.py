@@ -103,7 +103,7 @@ def run(*args):
                 y_co = float(st.session_state['Map_data'][i]['Location'].split(' ')[1])
             folium.Marker([x_co, y_co]
                             , popup=popup, tooltip=i).add_to(map_draw)
-        folium_static(map_draw, width=937, height=550)
+    folium_static(map_draw, width=937, height=550)
 
     db.collection('Users').document(email).collection('PLUGINS').document('Maps').set(st.session_state['Map_data'])
 
