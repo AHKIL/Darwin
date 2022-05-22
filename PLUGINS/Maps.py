@@ -99,7 +99,8 @@ def run(*args):
         folium.Marker([x_co, y_co]
                         , popup=popup, tooltip=i).add_to(map_draw)
     folium_static(map_draw, width=937, height=550)
-    if dvid[2].button('Export'):
+
+    def export_maps():
         map_draw = folium.Map(location=[31.1611, 76.9180], zoom_start=8, width=383, height=725)
         for i in st.session_state['Map_data']:
             strin = ''
@@ -125,7 +126,10 @@ def run(*args):
         draw.add_to(map_draw)
         fig = Figure(width=383, height=725)
         fig.add_child(map_draw)
-        fig.save('/'.join(os.getcwd().split('/')[:-1])+'/map2.html')  
+        return fig
+        
+    map_data = export_maps()
+    dvid[2].download_button('Export',map_data._repr_html_(),file_name = 'Maps.html', mime = 'text/html')
     db.collection('Users').document(email).collection('PLUGINS').document('Maps').set(st.session_state['Map_data'])
 
 def make_templete(db,email):
