@@ -7,7 +7,7 @@ import os
 
 #-------------------------------------------------MAPS---------------------------------------------------------
 def interface():
-    setup_config = {"Data required":False,
+    setup_config = {"Data required":True,
                     "Args":["Database","Email"]}
     return setup_config
 
@@ -29,6 +29,8 @@ def run(*args):
         off=False
     def click_button_loc():
         if off==False:
+            if st.session_state['Map_data'] == None:
+                st.session_state['Map_data']={}
             st.session_state['Map_data'][name]={'Location':st.session_state.mp_loc_,'Section':{}}
             st.session_state.mp_nam=''
             st.session_state.mp_loc_=''
