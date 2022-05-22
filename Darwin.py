@@ -74,6 +74,8 @@ def signup():
     text_signup[1].write('Already have an account')
     text_signup[2].button('Sign in', on_click=change_to_signin)
     info_={}
+    info_['DefaultMenu']='Settings'
+    info_['MenuStyle']='Left'
     with si[1].container():
         info_['Workspace Name'] = st.text_input('Workspace Name',key = 'Workspace Name', placeholder = 'Workspace Name')
         st.text_input('Email',key = 'email', placeholder = 'Email')
