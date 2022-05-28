@@ -3,7 +3,6 @@ import folium
 from streamlit_folium import folium_static
 import branca
 from branca.element import Figure
-import os
 
 #-------------------------------------------------MAPS---------------------------------------------------------
 def interface():
@@ -118,8 +117,6 @@ def run(*args):
             folium.Marker([x_co, y_co]
                             , popup=popup, tooltip=i).add_to(map_draw)
     folium_static(map_draw, width=937, height=550)
-
-    db.collection('Users').document(email).collection('PLUGINS').document('Maps').set(st.session_state['Map_data'])
 
 def make_templete(db,email):
     template={}
