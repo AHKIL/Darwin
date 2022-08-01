@@ -68,5 +68,5 @@ def run(*args):
     met[1].metric(label="Intrinsic Enterprise value", value=str(round(intrinsic_value,2))+' cr')
     met[2].metric(label="Enterprise value with 50% magin of safety", value=str(round(intrinsic_value/2,2))+' cr')
     st.subheader('')
-    with st.expander('Disclaimer'):
-        st.caption('*The current Enterprise value should be at the Intrinsic Enterprise value to get you returns equal to the discount rate')
+    st.markdown('##### Disclaimer')
+    st.caption('*The current Enterprise value should be at the Intrinsic Enterprise value to get you returns equal to the discount rate')

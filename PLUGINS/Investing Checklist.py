@@ -1,5 +1,4 @@
-from email.policy import default
-from multiprocessing.sharedctypes import Value
+
 import streamlit as st
 from st_btn_select import st_btn_select
 import numpy as np
@@ -215,32 +214,33 @@ def run(*args):
         dta=[]
         coulmn.append(' ')
         for i in soup.find('div',{'class':re.compile(r'financials-table relative')}).findAll('span'):
-            if 'span' in str(i.contents) or str(i.text)=='' or  str(i.text)=='See Costs':
-                continue
-            if 'FY' in str(i.text):
+            if any(chr.isdigit() for chr in i.text) or '—' in i.text:
+                coulmn.append(i.text.replace(',', '').replace('—', '0'))
+            else:
                 dta.append(coulmn)
-                coulmn=[]
-            coulmn.append(i.text.replace(',', '').replace('—', '0'))
-        dta.append(coulmn)
+                coulmn=[i.text.replace(',', '').replace('—', '0')]
         df = pd.DataFrame(dta)
-        df=df.set_index([0]).transpose().set_index([' '])
-        
+        df.columns = df.iloc[0]
+        df.drop(df.index[0],inplace=True)
+        df=df.set_index(df.columns[0])
+        df = df.fillna(value='0')
+
         urlpage=urllib.request.urlopen(balance)
         soup=bs.BeautifulSoup(urlpage,'html.parser')
         coulmn=[]
         dta=[]
         coulmn.append(' ')
         for i in soup.find('div',{'class':re.compile(r'financials-table relative')}).findAll('span'):
-            if 'span' in str(i.contents) or str(i.text)=='' or  str(i.text)=='See Costs':
-                continue
-            if 'FY' in str(i.text):
+            if any(chr.isdigit() for chr in i.text) or '—' in i.text:
+                coulmn.append(i.text.replace(',', '').replace('—', '0'))
+            else:
                 dta.append(coulmn)
-                coulmn=[]
-            coulmn.append(i.text.replace(',', '').replace('—', '0'))
-        dta.append(coulmn)
+                coulmn=[i.text.replace(',', '').replace('—', '0')]
         dfb = pd.DataFrame(dta)
-        dfb=dfb.set_index([0]).transpose().set_index([' '])
-        dfb=dfb[:-1]
+        dfb.columns = dfb.iloc[0]
+        dfb.drop(dfb.index[0],inplace=True)
+        dfb=dfb.set_index(dfb.columns[0])
+        dfb = dfb.fillna(value='0')
 
         urlpage=urllib.request.urlopen(cashflow)
         soup=bs.BeautifulSoup(urlpage,'html.parser')
@@ -248,16 +248,16 @@ def run(*args):
         dta=[]
         coulmn.append(' ')
         for i in soup.find('div',{'class':re.compile(r'financials-table relative')}).findAll('span'):
-            if 'span' in str(i.contents) or str(i.text)=='' or  str(i.text)=='See Costs':
-                continue
-            if 'FY' in str(i.text):
+            if any(chr.isdigit() for chr in i.text) or '—' in i.text:
+                coulmn.append(i.text.replace(',', '').replace('—', '0'))
+            else:
                 dta.append(coulmn)
-                coulmn=[]
-            coulmn.append(i.text.replace(',', '').replace('—', '0'))
-        dta.append(coulmn)
+                coulmn=[i.text.replace(',', '').replace('—', '0')]
         dfc = pd.DataFrame(dta)
-        dfc=dfc.set_index([0]).transpose().set_index([' '])
-        dfc=dfc[:-1]
+        dfc.columns = dfc.iloc[0]
+        dfc.drop(dfc.index[0],inplace=True)
+        dfc=dfc.set_index(dfc.columns[0])
+        dfc = dfc.fillna(value='0')
         urlpage.close()
         
         response = requests.get(l[0:indx])
